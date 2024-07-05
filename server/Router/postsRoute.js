@@ -111,4 +111,47 @@ router.put("/dislike/:id", async (req, res) => {
   }
 });
 
+router.get("/likeDecrescenti", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM posts ORDER BY miPiace DESC");
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+router.get("/likeCrescenti", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM posts ORDER BY miPiace ASC");
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+
+router.get("/showLike/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query("SELECT miPiace FROM posts WHERE id = $1", [id]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+router.get("/showDislike/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query("SELECT nonMiPiace FROM posts WHERE id = $1", [id]);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
 module.exports = router;

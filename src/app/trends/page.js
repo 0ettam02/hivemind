@@ -3,15 +3,15 @@ import React from "react";
 import Header from "../components/header";
 import Idea from "../components/idea";
 import NavBarComponent from "../components/navBarComponent";
-import Guide from "../components/guide";
+import TrendComponent from "../components/trendComponent";
 
-export default function Guida() {
+export default function Trends() {
   return (
     <>
       <Header />
       <Idea />
       <NavBarComponent />
-      <Guide />
+      <TrendComponent />
     </>
   );
 }

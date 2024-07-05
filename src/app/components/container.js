@@ -8,16 +8,31 @@ export default function Container() {
   const [posts, setPosts] = useState([]);
   const [tags, setTags] = useState("HOME");
   const [visible, setVisible] = useState(true);
+  const [dec, setDec] = useState(false);
+  const [asc, setAsc] = useState(false);
 
   const taggleClick = () => {
     setVisible(!visible);
   };
 
   useEffect(() => {
-    fetch("http://localhost:8080/posts/card")
-      .then((response) => response.json())
-      .then((data) => setPosts(data));
-  }, []);
+    const fetchPosts = async () => {
+      let url;
+      if (!dec || !asc) {
+        url = "http://localhost:8080/posts/card";
+      }if (asc) {
+        url = "http://localhost:8080/posts/likeCrescenti";
+      }if (dec) {
+        url = "http://localhost:8080/posts/likeDecrescenti";
+      }
+
+      console.log(url);
+      const response = await fetch(url);
+      const data = await response.json();
+      setPosts(data);
+    };
+    fetchPosts();
+  }, [dec, asc]);
 
   useEffect(() => {
     if (visible) {
@@ -29,11 +44,26 @@ export default function Container() {
     setTags(tag);
   };
 
+  const handleLikeDec = () => {
+    setDec(!dec);
+    setAsc(false);
+  };
+
+  const handleLikeAsc = () => {
+    setAsc(!asc);
+    setDec(false);
+  };
+
   return (
     <>
       <div className="mt-10 md:ml-10">
         {visible ? (
-          <Tendina onTagChange={handleTagChange} changeVisible={taggleClick} />
+          <Tendina
+            onTagChange={handleTagChange}
+            changeVisible={taggleClick}
+            likeDec={handleLikeDec}
+            likeAsc={handleLikeAsc}
+          />
         ) : (
           <Tendina onTagChange={handleTagChange} changeVisible={taggleClick} />
         )}

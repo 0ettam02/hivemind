@@ -66,9 +66,16 @@ body {
   }
 }
 
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .text-shadow {
+    text-shadow: 
+      -1px -1px 0 #bf84fb, 
+      1px -1px 0 #bf84fb, 
+      -1px 1px 0 #bf84fb, 
+      1px 1px 0 #bf84fb;
   }
 }

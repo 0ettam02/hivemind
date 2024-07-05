@@ -14,17 +14,29 @@ export default function Card({ cardId }) {
   const [showDescription, setShowDescription] = useState(false);
   const [visible, setVisible] = useState(false);
   const [commenti, setCommenti] = useState(0);
+  const [showLike, setShowLike] = useState(0);
   const cardRef = useRef(null);
 
   useEffect(() => {
     fetch(`http://localhost:8080/posts/whitepage/${cardId}`)
       .then((response) => response.json())
       .then((data) => {
-        setPosts(data);
+        setPosts(data[0]);
       })
       .catch((error) => {
         console.error(error);
       });
+  }, [cardId]);
+
+  useEffect(() => {
+    const fetchLike = async () => {
+      const response = await fetch(
+        `http://localhost:8080/posts/showLike/${cardId}`
+      );
+      const data = await response.json();
+      setShowLike(data[0].mipiace);
+    };
+    fetchLike();
   }, [cardId]);
 
   useEffect(() => {
@@ -52,6 +64,43 @@ export default function Card({ cardId }) {
     };
   }, []);
 
+  // const handleButtonLike = async () => {
+  //   console.log(`Invio richiesta PUT per l'ID: ${cardId}`);
+  //   try {
+  //     const response = await fetch(
+  //       `http://localhost:8080/posts/like/${cardId}`,
+  //       {
+  //         method: "PUT",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           miPiace: activeButton === "like" ? 0 : 1,
+  //           nonMiPiace: 0,
+  //         }),
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error("Network response was not ok");
+  //     }
+
+  //     const data = await response.json();
+  //     console.log("Success:", data);
+
+  //     if (activeButton === "like") {
+  //       setLike(0);
+  //       setActiveButton(null);
+  //     } else {
+  //       setLike(1);
+  //       setDislike(0);
+  //       setActiveButton("like");
+  //     }
+  //   } catch (error) {
+  //     console.error("There was a problem with the fetch operation:", error);
+  //   }
+  // };
+
   const handleButtonLike = async () => {
     console.log(`Invio richiesta PUT per l'ID: ${cardId}`);
     try {
@@ -61,11 +110,7 @@ export default function Card({ cardId }) {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            miPiace: activeButton === "like" ? 0 : 1,
-            nonMiPiace: 0,
-          }),
+          }
         }
       );
 
@@ -80,8 +125,7 @@ export default function Card({ cardId }) {
         setLike(0);
         setActiveButton(null);
       } else {
-        setLike(1);
-        setDislike(0);
+        setLike(like + 1);
         setActiveButton("like");
       }
     } catch (error) {
@@ -148,25 +192,16 @@ export default function Card({ cardId }) {
               onClick={() => {
                 toggleDescription();
               }}
-              className={`flex justify-center font-bold rounded-xl bg-gradient-to-r from-purple-400 to-green-200 text-white border-2 border-purple-400 w-80 h-80 overflow-y-auto overflow-x-auto duration-300 md:w-[28em] md:h-[28em] focus:animate-rotate-y ${showDescription ? "" : "items-center"}`}
+              className={`flex justify-center font-bold rounded-xl bg-gradient-to-r from-purple-400 to-green-200 text-white border-2 border-purple-400 w-80 h-80 overflow-y-auto overflow-x-auto duration-300 md:w-[28em] md:h-[28em] focus:animate-rotate-y ${
+                showDescription ? "" : "items-center"
+              }`}
             >
               <div className="w-60 break-words">
-                {Array.isArray(posts) ? (
-                  posts.map((post) => (
-                    <div key={post.id}>
-                      <h2>{showDescription ? post.descrizione : post.title}</h2>
-                    </div>
-                  ))
-                ) : (
-                  <h2>{showDescription ? posts.description : posts.title}</h2>
-                )}
+                <h2>{showDescription ? posts.descrizione : posts.title}</h2>
               </div>
             </button>
           ) : (
-            <Commenti
-              cardId={cardId}
-              CommentAdded={handleCommentAdded}
-            />
+            <Commenti cardId={cardId} CommentAdded={handleCommentAdded} />
           )}
         </div>
 
@@ -178,7 +213,7 @@ export default function Card({ cardId }) {
             className="text-purple-400"
           >
             <FiThumbsUp onClick={handleButtonLike} />
-            {like}
+            {showLike}
           </Button>
 
           <Button

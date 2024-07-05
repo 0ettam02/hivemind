@@ -1,14 +1,17 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import Idea from "./idea";
-import { toggle } from "@nextui-org/react";
 
 export default function Header() {
   const [visible, setVisible] = useState(true);
+  const [profileMenu, setProfileMenu] = useState(true);
 
   const toggleVisible = () => {
     setVisible(!visible);
+  };
+
+  const toggleMenu = () => {
+    setProfileMenu(!profileMenu);
   };
 
   return (
@@ -22,17 +25,20 @@ export default function Header() {
         </Link>
 
         {visible ? (
-          <Link onClick={toggleVisible} href={"/login"} className=" justify-self-end mr-5 font-bold bg-purple-400 rounded-lg border-2 border-white p-1">
+          <Link
+            href="/login"
+            onClick={toggleVisible}
+            className=" justify-self-end mr-5 font-bold bg-purple-400 rounded-lg border-2 border-white p-1"
+          >
             Login
           </Link>
         ) : (
-          <ul className="flex space-x-4">
-            <li>
-              <Link className="" href={"/guida"}>
-                What is hivemind
-              </Link>
-            </li>
-          </ul>
+          <button
+            onClick={toggleVisible}
+            className=" justify-self-end mr-5 font-bold bg-purple-400 rounded-lg border-2 border-white p-1"
+          >
+            profile
+          </button>
         )}
       </div>
     </>
