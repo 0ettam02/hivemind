@@ -101,16 +101,52 @@ export default function Card({ cardId }) {
   //   }
   // };
 
+  // const handleButtonLike = async () => {
+  //   console.log(`Invio richiesta PUT per l'ID: ${cardId}`);
+  //   try {
+  //     const response = await fetch(
+  //       `http://localhost:8080/posts/like/${cardId}`,
+  //       {
+  //         method: "PUT",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         }
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error("Network response was not ok");
+  //     }
+
+  //     const data = await response.json();
+  //     console.log("Success:", data);
+
+  //     if (activeButton === "like") {
+  //       setLike(0);
+  //       setActiveButton(null);
+  //     } else {
+  //       setLike(like + 1);
+  //       setActiveButton("like");
+  //     }
+  //   } catch (error) {
+  //     console.error("There was a problem with the fetch operation:", error);
+  //   }
+  // };
+
   const handleButtonLike = async () => {
     console.log(`Invio richiesta PUT per l'ID: ${cardId}`);
     try {
       const response = await fetch(
-        `http://localhost:8080/posts/like/${cardId}`,
+        `http://localhost:8080/posts/dislike/${cardId}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-          }
+          },
+          body: JSON.stringify({
+            miPiace: activeButton === "like" ? 0 : 1,
+            nonMiPiace: 0,
+          }),
         }
       );
 
@@ -161,7 +197,7 @@ export default function Card({ cardId }) {
         setDislike(0);
         setActiveButton(null);
       } else {
-        setDislike(1);
+        setDislike(dislike - 1);
         setLike(0);
         setActiveButton("dislike");
       }
