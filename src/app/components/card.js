@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import Commenti from "./commenti";
 import { Button } from "@nextui-org/button";
-import { FiThumbsUp } from "react-icons/fi";
-import { FiThumbsDown } from "react-icons/fi";
-import { MdOutlineInsertComment } from "react-icons/md";
-import { MdOutlineCommentsDisabled } from "react-icons/md";
+import { FiThumbsUp, FiThumbsDown } from "react-icons/fi";
+import { MdOutlineInsertComment, MdOutlineCommentsDisabled } from "react-icons/md";
 
 export default function Card({ cardId }) {
   const [like, setLike] = useState(0);
@@ -15,6 +13,7 @@ export default function Card({ cardId }) {
   const [visible, setVisible] = useState(false);
   const [commenti, setCommenti] = useState(0);
   const [showLike, setShowLike] = useState(0);
+  const [showDislike, setShowDislike] = useState(0); // State for dislikes
   const cardRef = useRef(null);
 
   useEffect(() => {
@@ -34,10 +33,21 @@ export default function Card({ cardId }) {
         `http://localhost:8080/posts/showLike/${cardId}`
       );
       const data = await response.json();
-      setShowLike(data[0].mipiace);
+      setShowLike(data.mipiace);
     };
     fetchLike();
-  }, [cardId]);
+  }, [cardId, like]);
+
+  useEffect(() => {
+    const fetchDislike = async () => {
+      const response = await fetch(
+        `http://localhost:8080/posts/showDislike/${cardId}`
+      );
+      const data = await response.json();
+      setShowDislike(data.nonmipiace); // Assuming your backend returns the count of dislikes as 'nonmipiace'
+    };
+    fetchDislike();
+  }, [cardId, dislike]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -64,88 +74,18 @@ export default function Card({ cardId }) {
     };
   }, []);
 
-  // const handleButtonLike = async () => {
-  //   console.log(`Invio richiesta PUT per l'ID: ${cardId}`);
-  //   try {
-  //     const response = await fetch(
-  //       `http://localhost:8080/posts/like/${cardId}`,
-  //       {
-  //         method: "PUT",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({
-  //           miPiace: activeButton === "like" ? 0 : 1,
-  //           nonMiPiace: 0,
-  //         }),
-  //       }
-  //     );
-
-  //     if (!response.ok) {
-  //       throw new Error("Network response was not ok");
-  //     }
-
-  //     const data = await response.json();
-  //     console.log("Success:", data);
-
-  //     if (activeButton === "like") {
-  //       setLike(0);
-  //       setActiveButton(null);
-  //     } else {
-  //       setLike(1);
-  //       setDislike(0);
-  //       setActiveButton("like");
-  //     }
-  //   } catch (error) {
-  //     console.error("There was a problem with the fetch operation:", error);
-  //   }
-  // };
-
-  // const handleButtonLike = async () => {
-  //   console.log(`Invio richiesta PUT per l'ID: ${cardId}`);
-  //   try {
-  //     const response = await fetch(
-  //       `http://localhost:8080/posts/like/${cardId}`,
-  //       {
-  //         method: "PUT",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         }
-  //       }
-  //     );
-
-  //     if (!response.ok) {
-  //       throw new Error("Network response was not ok");
-  //     }
-
-  //     const data = await response.json();
-  //     console.log("Success:", data);
-
-  //     if (activeButton === "like") {
-  //       setLike(0);
-  //       setActiveButton(null);
-  //     } else {
-  //       setLike(like + 1);
-  //       setActiveButton("like");
-  //     }
-  //   } catch (error) {
-  //     console.error("There was a problem with the fetch operation:", error);
-  //   }
-  // };
-
   const handleButtonLike = async () => {
-    console.log(`Invio richiesta PUT per l'ID: ${cardId}`);
     try {
       const response = await fetch(
-        `http://localhost:8080/posts/dislike/${cardId}`,
+        `http://localhost:8080/posts/like/`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            miPiace: activeButton === "like" ? 0 : 1,
-            nonMiPiace: 0,
+            userId : 1,
+            postId : cardId
           }),
         }
       );
@@ -154,34 +94,25 @@ export default function Card({ cardId }) {
         throw new Error("Network response was not ok");
       }
 
-      const data = await response.json();
-      console.log("Success:", data);
-
-      if (activeButton === "like") {
-        setLike(0);
-        setActiveButton(null);
-      } else {
-        setLike(like + 1);
-        setActiveButton("like");
-      }
+      setLike(like + 1);
+      setActiveButton("like");
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
     }
   };
 
   const handleButtonDislike = async () => {
-    console.log(`Invio richiesta PUT per l'ID: ${cardId}`);
     try {
       const response = await fetch(
-        `http://localhost:8080/posts/dislike/${cardId}`,
+        `http://localhost:8080/posts/dislike/`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            nonMiPiace: activeButton === "dislike" ? 0 : 1,
-            miPiace: 0,
+            userId : 1,
+            postId : cardId
           }),
         }
       );
@@ -190,17 +121,8 @@ export default function Card({ cardId }) {
         throw new Error("Network response was not ok");
       }
 
-      const data = await response.json();
-      console.log("Success:", data);
-
-      if (activeButton === "dislike") {
-        setDislike(0);
-        setActiveButton(null);
-      } else {
-        setDislike(dislike - 1);
-        setLike(0);
-        setActiveButton("dislike");
-      }
+      setDislike(dislike + 1);
+      setActiveButton("dislike");
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
     }
@@ -225,9 +147,7 @@ export default function Card({ cardId }) {
           {!visible ? (
             <button
               id="Card"
-              onClick={() => {
-                toggleDescription();
-              }}
+              onClick={toggleDescription}
               className={`flex justify-center font-bold rounded-xl bg-gradient-to-r from-purple-400 to-green-200 text-white border-2 border-purple-400 w-80 h-80 overflow-y-auto overflow-x-auto duration-300 md:w-[28em] md:h-[28em] focus:animate-rotate-y ${
                 showDescription ? "" : "items-center"
               }`}
@@ -247,8 +167,9 @@ export default function Card({ cardId }) {
             color="danger"
             aria-label="Like"
             className="text-purple-400"
+            onClick={handleButtonLike}
           >
-            <FiThumbsUp onClick={handleButtonLike} />
+            <FiThumbsUp />
             {showLike}
           </Button>
 
@@ -257,9 +178,10 @@ export default function Card({ cardId }) {
             color="danger"
             aria-label="DisLike"
             className="text-purple-400"
+            onClick={handleButtonDislike}
           >
-            <FiThumbsDown onClick={handleButtonDislike} />
-            {dislike}
+            <FiThumbsDown />
+            {showDislike} {/* Updated to show the correct number of dislikes */}
           </Button>
 
           {!visible ? (

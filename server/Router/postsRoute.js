@@ -77,34 +77,65 @@ router.get("/reqComment/:id", async (req, res) => {
   }
 });
 
-router.put("/like/:id", async (req, res) => {
+router.put("/like/", async (req, res) => {
   try {
-    const { id } = req.params;
-    const { miPiace, nonMiPiace } = req.body;
-
-    const result = await pool.query(
-      "UPDATE posts SET miPiace = $1, nonMiPiace = $2 WHERE id = $3 RETURNING *",
-      [miPiace, nonMiPiace, id]
+    const { userId, postId } = req.body;
+    let result;
+    console.log(postId)
+    
+    const deleted = await pool.query(
+      "SELECT COUNT(id) FROM likes WHERE idPost = ($1) AND idUser = ($2)",
+      [postId, userId]
     );
+    console.log(deleted.rows[0].count);
+    if (deleted.rows[0].count == 0) {
+      const cancellaDislike = await pool.query("DELETE FROM dislike WHERE idPost = ($1) AND idUser = ($2)", 
+        [postId, userId]
+      )
+      const result = await pool.query(
+        "INSERT INTO likes (idPost, idUser) VALUES ($1,$2)",
+        [postId, userId]
+      );
+    } else {
+      const result = await pool.query(
+        "DELETE FROM likes WHERE idPost = ($1) AND idUser = ($2)",
+        [postId, userId]
+      );
+    }
 
-    res.json(result.rows);
   } catch (err) {
     console.error(err);
     res.sendStatus(500);
   }
 });
 
-router.put("/dislike/:id", async (req, res) => {
+
+router.put("/dislike/", async (req, res) => {
   try {
-    const { id } = req.params;
-    const { miPiace, nonMiPiace } = req.body;
-
-    const result = await pool.query(
-      "UPDATE posts SET miPiace = $1, nonMiPiace = $2 WHERE id = $3 RETURNING *",
-      [miPiace, nonMiPiace, id]
+    const { userId, postId } = req.body;
+    let result;
+    console.log(postId)
+    
+    const deleted = await pool.query(
+      "SELECT COUNT(id) FROM dislike WHERE idPost = ($1) AND idUser = ($2)",
+      [postId, userId]
     );
+    console.log(deleted.rows[0].count);
+    if (deleted.rows[0].count == 0) {
+      const cancellaLike = await pool.query("DELETE FROM likes WHERE idPost = ($1) AND idUser = ($2)", 
+        [postId, userId]
+      )
+      const result = await pool.query(
+        "INSERT INTO dislike (idPost, idUser) VALUES ($1,$2)",
+        [postId, userId]
+      );
+    } else {
+      const result = await pool.query(
+        "DELETE FROM dislike WHERE idPost = ($1) AND idUser = ($2)",
+        [postId, userId]
+      );
+    }
 
-    res.json(result.rows);
   } catch (err) {
     console.error(err);
     res.sendStatus(500);
@@ -113,7 +144,9 @@ router.put("/dislike/:id", async (req, res) => {
 
 router.get("/likeDecrescenti", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM posts ORDER BY miPiace DESC");
+    const result = await pool.query(
+      "SELECT * FROM posts ORDER BY miPiace DESC"
+    );
     res.json(result.rows);
   } catch (err) {
     console.error(err);
@@ -131,27 +164,32 @@ router.get("/likeCrescenti", async (req, res) => {
   }
 });
 
-
 router.get("/showLike/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await pool.query("SELECT miPiace FROM posts WHERE id = $1", [id]);
-    res.json(result.rows);
+    const result = await pool.query("SELECT COUNT(*) AS mipiace FROM likes WHERE idpost = $1", 
+      [id]
+    );
+    res.json(result.rows[0]);
   } catch (err) {
     console.error(err);
     res.sendStatus(500);
   }
 });
+
 
 router.get("/showDislike/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const result = await pool.query("SELECT nonMiPiace FROM posts WHERE id = $1", [id]);
-    res.json(result.rows);
+    const result = await pool.query("SELECT COUNT(*) AS nonmipiace FROM dislike WHERE idpost = $1", 
+      [id]
+    );
+    res.json(result.rows[0]);
   } catch (err) {
     console.error(err);
     res.sendStatus(500);
   }
 });
+
 
 module.exports = router;
