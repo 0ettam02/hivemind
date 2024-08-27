@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import { Button } from "@nextui-org/button";
 import Link from "next/link";
 
 export default function InsertPost() {
