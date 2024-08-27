@@ -11,6 +11,8 @@
   "dependencies": {
     "@nextui-org/button": "^2.0.31",
     "@nextui-org/react": "^2.3.6",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18",
