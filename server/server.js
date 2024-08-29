@@ -14,9 +14,6 @@ app.use(express.json());
 const postsRoute = require('./Router/postsRoute');
 app.use('/posts', postsRoute);
 
-// const usersRoute = require('./Router/usersRoute');
-// app.use('/users', usersRoute);
-
 app.listen(PORT, () => {
     console.log("server started on port " + PORT);
 });

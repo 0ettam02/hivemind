@@ -1,46 +1,38 @@
 "use client";
+
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
-  const [visible, setVisible] = useState(true);
-  const [profileMenu, setProfileMenu] = useState(true);
+  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(() => !!localStorage.getItem("token"));
 
-  const toggleVisible = () => {
-    setVisible(!visible);
-  };
-
-  const toggleMenu = () => {
-    setProfileMenu(!profileMenu);
+  const handleAuthAction = () => {
+    if (isAuthenticated) {
+      localStorage.removeItem("token");
+      setIsAuthenticated(false);
+      router.push('/login'); 
+    } else {
+      router.push('/login');
+    }
   };
 
   return (
-    <>
-      <div className="grid grid-cols-2 place-items-center gap-10 text-white bg-gradient-to-r from-purple-400 to-green-200 md:gap-0">
-        <Link
-          className="font-bold text-4xl md:ml-5 md:justify-self-start"
-          href="/"
-        >
-          HiveMind
-        </Link>
+    <div className="grid grid-cols-2 place-items-center gap-10 text-white bg-gradient-to-r from-purple-400 to-green-200 md:gap-0">
+      <Link
+        className="font-bold text-4xl md:ml-5 md:justify-self-start"
+        href="/"
+      >
+        HiveMind
+      </Link>
 
-        {visible ? (
-          <Link
-            href="/login"
-            onClick={toggleVisible}
-            className=" justify-self-end mr-5 font-bold bg-purple-400 rounded-lg border-2 border-white p-1"
-          >
-            Login
-          </Link>
-        ) : (
-          <button
-            onClick={toggleVisible}
-            className=" justify-self-end mr-5 font-bold bg-purple-400 rounded-lg border-2 border-white p-1"
-          >
-            profile
-          </button>
-        )}
-      </div>
-    </>
+      <button
+        onClick={handleAuthAction}
+        className="justify-self-end mr-5 font-bold bg-purple-400 rounded-lg border-2 border-white p-1"
+      >
+        {isAuthenticated ? 'Logout' : 'Login'}
+      </button>
+    </div>
   );
 }

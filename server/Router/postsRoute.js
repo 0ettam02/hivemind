@@ -1,9 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../database");
-const SaltRounds = 10;
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken');
+const authenticateToken = require('../middleware/authMiddleware'); 
 
+const SaltRounds = 10;
+const JWT_SECRET = 'N86004402';
 
 router.get("/card", async (req, res) => {
   try {
@@ -208,4 +211,34 @@ router.post("/registrazione", async(req, res) => {
 });
 
 
+router.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const userResult = await pool.query("SELECT * FROM users WHERE username = $1", [username]);
+
+    if (userResult.rows.length === 0) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    const user = userResult.rows[0];
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
+    res.json({ token });
+  } catch (err) {
+    console.error(err);
+    res.sendStatus(500);
+  }
+});
+
+
+router.get('/protected-route', authenticateToken, (req, res) => {
+  res.json({ message: 'This is a protected route' });
+});
+
 module.exports = router;
+

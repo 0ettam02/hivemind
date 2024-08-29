@@ -33,27 +33,6 @@ export default function WhitePage({ cardId, onClick }) {
           </h1>
         </div>
 
-        {/* <div className="flex flex-col items-center gap-10 mt-10 md:flex-row md:justify-center md:gap-40">
-          <img
-            src={
-              Array.isArray(posts) ? (
-                posts.map((post) => (
-                  <div key={post.id}>
-                    <h2>{post.images}</h2>
-                  </div>
-                ))
-              ) : (
-                <h2>{posts.images}</h2>
-              )
-            }
-            width={300}
-            height={300}
-            alt="immagine"
-          />
-          <img src="/" width={300} height={300} alt="immagine" />
-          <img src="/" width={300} height={300} alt="immagine" />
-        </div> */}
-
         <p className="mt-5 break-words">
           <div className="text-black">
             {posts.map((post) => (

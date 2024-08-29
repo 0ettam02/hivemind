@@ -13,7 +13,7 @@ export default function Card({ cardId }) {
   const [visible, setVisible] = useState(false);
   const [commenti, setCommenti] = useState(0);
   const [showLike, setShowLike] = useState(0);
-  const [showDislike, setShowDislike] = useState(0); // State for dislikes
+  const [showDislike, setShowDislike] = useState(0); 
   const cardRef = useRef(null);
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function Card({ cardId }) {
         `http://localhost:8080/posts/showDislike/${cardId}`
       );
       const data = await response.json();
-      setShowDislike(data.nonmipiace); // Assuming your backend returns the count of dislikes as 'nonmipiace'
+      setShowDislike(data.nonmipiace); 
     };
     fetchDislike();
   }, [cardId, dislike]);
@@ -181,7 +181,7 @@ export default function Card({ cardId }) {
             onClick={handleButtonDislike}
           >
             <FiThumbsDown />
-            {showDislike} {/* Updated to show the correct number of dislikes */}
+            {showDislike}
           </Button>
 
           {!visible ? (
