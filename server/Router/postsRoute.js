@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const pool = require("../database");
+const SaltRounds = 10;
+const bcrypt = require('bcrypt')
+
 
 router.get("/card", async (req, res) => {
   try {
@@ -194,8 +197,9 @@ router.get("/showDislike/:id", async (req, res) => {
 router.post("/registrazione", async(req, res) => {
   try {
     const { username, password, nome, cognome, email } = req.body;
+    const hashedPassword = await bcrypt.hash(password, SaltRounds)
     const result = await pool.query("INSERT INTO users (username, password, nome, cognome, email) VALUES ($1,$2,$3,$4,$5) RETURNING *",
-    [username, password, nome, cognome, email]);
+    [username, hashedPassword, nome, cognome, email]);
     res.json(result.rows[0]);
   } catch (err) {
     console.error(err);
