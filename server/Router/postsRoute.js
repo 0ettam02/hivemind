@@ -18,12 +18,13 @@ router.get("/card", async (req, res) => {
   }
 });
 
-router.post("/insertPost", async (req, res) => {
+router.post("/insertPost", authenticateToken, async (req, res) => {
   try {
+    const userid = req.user.userId
     const { descrizione, title, tag } = req.body;
     const result = await pool.query(
-      "INSERT INTO posts (descrizione, title, tag) VALUES ($1, $2, $3) RETURNING *",
-      [descrizione, title, tag]
+      "INSERT INTO posts (descrizione, title, tag, userid) VALUES ($1, $2, $3, $4) RETURNING *",
+      [descrizione, title, tag, userid]
     );
     res.json(result.rows[0]);
   } catch (err) {
@@ -32,8 +33,9 @@ router.post("/insertPost", async (req, res) => {
   }
 });
 
-router.post("/comment/:id", async (req, res) => {
+router.post("/comment/:id",authenticateToken, async (req, res) => {
   try {
+    const userid = req.user.userId
     console.log(req.body);
     const { testo } = req.body;
     const idPost = req.params.id;
@@ -47,8 +49,8 @@ router.post("/comment/:id", async (req, res) => {
     }
 
     const result = await pool.query(
-      "INSERT INTO commenti (testo, idPost) VALUES ($1, $2) RETURNING *",
-      [testo, idPost]
+      "INSERT INTO commenti (testo, idPost, userid) VALUES ($1, $2, $3) RETURNING *",
+      [testo, idPost, userid]
     );
 
     res.json(result.rows[0]);
@@ -69,8 +71,9 @@ router.get("/whitepage/:id", async (req, res) => {
   }
 });
 
-router.get("/reqComment/:id", async (req, res) => {
+router.get("/reqComment/:id",authenticateToken, async (req, res) => {
   try {
+    const userid = req.user.userId
     const { id } = req.params;
     const result = await pool.query(
       "SELECT * FROM commenti WHERE idPost = $1",
@@ -83,29 +86,29 @@ router.get("/reqComment/:id", async (req, res) => {
   }
 });
 
-router.put("/like/", async (req, res) => {
+router.put("/like/",authenticateToken, async (req, res) => {
   try {
-    const { userId, postId } = req.body;
+    const userid = req.user.userId
+    const { postId } = req.body;
     let result;
-    console.log(postId)
     
     const deleted = await pool.query(
       "SELECT COUNT(id) FROM likes WHERE idPost = ($1) AND idUser = ($2)",
-      [postId, userId]
+      [postId, userid]
     );
     console.log(deleted.rows[0].count);
     if (deleted.rows[0].count == 0) {
       const cancellaDislike = await pool.query("DELETE FROM dislike WHERE idPost = ($1) AND idUser = ($2)", 
-        [postId, userId]
+        [postId, userid]
       )
       const result = await pool.query(
         "INSERT INTO likes (idPost, idUser) VALUES ($1,$2)",
-        [postId, userId]
+        [postId, userid]
       );
     } else {
       const result = await pool.query(
         "DELETE FROM likes WHERE idPost = ($1) AND idUser = ($2)",
-        [postId, userId]
+        [postId, userid]
       );
     }
 
@@ -116,29 +119,29 @@ router.put("/like/", async (req, res) => {
 });
 
 
-router.put("/dislike/", async (req, res) => {
+router.put("/dislike", authenticateToken, async (req, res) => {
   try {
-    const { userId, postId } = req.body;
+    const userid = req.user.userId
+    const { postId } = req.body;
     let result;
-    console.log(postId)
     
     const deleted = await pool.query(
       "SELECT COUNT(id) FROM dislike WHERE idPost = ($1) AND idUser = ($2)",
-      [postId, userId]
+      [postId, userid]
     );
     console.log(deleted.rows[0].count);
     if (deleted.rows[0].count == 0) {
       const cancellaLike = await pool.query("DELETE FROM likes WHERE idPost = ($1) AND idUser = ($2)", 
-        [postId, userId]
+        [postId, userid]
       )
       const result = await pool.query(
         "INSERT INTO dislike (idPost, idUser) VALUES ($1,$2)",
-        [postId, userId]
+        [postId, userid]
       );
     } else {
       const result = await pool.query(
         "DELETE FROM dislike WHERE idPost = ($1) AND idUser = ($2)",
-        [postId, userId]
+        [postId, userid]
       );
     }
 

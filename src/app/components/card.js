@@ -7,11 +7,10 @@ import { MdOutlineInsertComment, MdOutlineCommentsDisabled } from "react-icons/m
 export default function Card({ cardId }) {
   const [like, setLike] = useState(0);
   const [dislike, setDislike] = useState(0);
-  const [activeButton, setActiveButton] = useState(null);
   const [posts, setPosts] = useState({});
   const [showDescription, setShowDescription] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [commenti, setCommenti] = useState(0);
+  const [commenti, setCommenti] = useState([]);
   const [showLike, setShowLike] = useState(0);
   const [showDislike, setShowDislike] = useState(0); 
   const cardRef = useRef(null);
@@ -50,6 +49,19 @@ export default function Card({ cardId }) {
   }, [cardId, dislike]);
 
   useEffect(() => {
+    const fetchComments = async () => {
+      const response = await fetch(`http://localhost:8080/posts/reqComment/${cardId}`);
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setCommenti(data.map((commento) => commento.testo));
+      } else {
+        setCommenti([data.commento]);
+      }
+    };
+    fetchComments();
+  }, [cardId]);
+
+  useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -76,15 +88,17 @@ export default function Card({ cardId }) {
 
   const handleButtonLike = async () => {
     try {
+      const token = localStorage.getItem('token');
+      if(!token) return null;
       const response = await fetch(
         `http://localhost:8080/posts/like/`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            'Authorization': `${token}`
           },
           body: JSON.stringify({
-            userId : 1,
             postId : cardId
           }),
         }
@@ -103,15 +117,17 @@ export default function Card({ cardId }) {
 
   const handleButtonDislike = async () => {
     try {
+      const token = localStorage.getItem('token');
+      if(!token) return null;
       const response = await fetch(
         `http://localhost:8080/posts/dislike/`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            'Authorization': `${token}`
           },
           body: JSON.stringify({
-            userId : 1,
             postId : cardId
           }),
         }
@@ -136,8 +152,8 @@ export default function Card({ cardId }) {
     setVisible(!visible);
   };
 
-  const handleCommentAdded = () => {
-    setCommenti(commenti + 1);
+  const handleCommentAdded = (newComment) => {
+    setCommenti([...commenti, newComment]);
   };
 
   return (
@@ -157,7 +173,7 @@ export default function Card({ cardId }) {
               </div>
             </button>
           ) : (
-            <Commenti cardId={cardId} CommentAdded={handleCommentAdded} />
+            <Commenti cardId={cardId} commenti={commenti} CommentAdded={handleCommentAdded} />
           )}
         </div>
 
@@ -184,29 +200,16 @@ export default function Card({ cardId }) {
             {showDislike}
           </Button>
 
-          {!visible ? (
-            <Button
-              isIconOnly
-              color="danger"
-              aria-label="Comment"
-              className="text-purple-400"
-              onClick={handleVisible}
-            >
-              <MdOutlineInsertComment />
-              {commenti}
-            </Button>
-          ) : (
-            <Button
-              isIconOnly
-              color="danger"
-              aria-label="Comment"
-              className="text-purple-400"
-              onClick={handleVisible}
-            >
-              <MdOutlineCommentsDisabled />
-              {commenti}
-            </Button>
-          )}
+          <Button
+            isIconOnly
+            color="danger"
+            aria-label="Comment"
+            className="text-purple-400"
+            onClick={handleVisible}
+          >
+            {visible ? <MdOutlineCommentsDisabled /> : <MdOutlineInsertComment />}
+            {commenti.length}
+          </Button>
         </div>
       </div>
     </div>

@@ -1,12 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(() => !!localStorage.getItem("token"));
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsAuthenticated(!!token);
+  }, []);
 
   const handleAuthAction = () => {
     if (isAuthenticated) {
@@ -14,7 +19,7 @@ export default function Header() {
       setIsAuthenticated(false);
       router.push('/login'); 
     } else {
-      router.push('/login');
+      router.push('/login'); 
     }
   };
 
@@ -26,12 +31,11 @@ export default function Header() {
       >
         HiveMind
       </Link>
-
       <button
         onClick={handleAuthAction}
         className="justify-self-end mr-5 font-bold bg-purple-400 rounded-lg border-2 border-white p-1"
       >
-        {isAuthenticated ? 'Logout' : 'Login'}
+        {isAuthenticated ? "Logout" : "Login"}
       </button>
     </div>
   );

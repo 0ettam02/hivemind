@@ -19,10 +19,13 @@ export default function InsertPost() {
 
   const handleButtonClick = async () => {
     try {
+      const token = localStorage.getItem('token');
+      if(!token) return null;
       const response = await fetch("http://localhost:8080/posts/insertPost", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          'Authorization': `${token}` 
         },
         body: JSON.stringify({
           descrizione: description,

@@ -1,42 +1,28 @@
 import React, { useState, useEffect } from "react";
 
-export default function Commenti({ cardId, CommentAdded }) {
-  const [comments, setComments] = useState([]);
+export default function Commenti({ cardId, commenti, CommentAdded }) {
   const [newComment, setNewComment] = useState("");
-
-  useEffect(() => {
-    fetch(`http://localhost:8080/posts/reqComment/${cardId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setComments(data.map((commento) => commento.testo));
-        } else {
-          setComments([data.commento]);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, [cardId]);
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (newComment.trim()) {
       try {
+        const token = localStorage.getItem('token');
+        if (!token) return null;
         const response = await fetch(
           `http://localhost:8080/posts/comment/${cardId}`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              'Authorization': `${token}`
             },
             body: JSON.stringify({ testo: newComment }),
           }
         );
         const newCommento = await response.json();
-        setComments([...comments, newCommento.testo]);
+        CommentAdded(newCommento.testo);
         setNewComment("");
-        CommentAdded();
       } catch (error) {
         console.error(error);
       }
@@ -47,11 +33,11 @@ export default function Commenti({ cardId, CommentAdded }) {
     <div className="bg-gray-100 flex items-center justify-center py-12 px-4 rounded-xl">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="text-3xl font-extrabold text-gray-900 text-center">
             Comment Section
           </h2>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleCommentSubmit}>
+        <form className="space-y-4" onSubmit={handleCommentSubmit}>
           <div className="rounded-md shadow-sm">
             <div>
               <label htmlFor="comment" className="sr-only">
@@ -61,39 +47,37 @@ export default function Commenti({ cardId, CommentAdded }) {
                 id="comment"
                 name="comment"
                 rows="3"
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                className="block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
                 placeholder="Add a comment"
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
               />
             </div>
           </div>
-
-          <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-400 hover:bg-purple-500"
-            >
-              Post Comment
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="w-full px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-purple-400 hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+          >
+            Post Comment
+          </button>
         </form>
-
-        {comments.length > 0 && (
-          <div className="mt-8 space-y-6">
-            <h3 className="text-lg font-medium text-gray-900">Comments</h3>
-            <div className="max-h-64 overflow-y-auto">
-              {comments.map((comment, index) => (
-                <div
-                  key={index}
-                  className="bg-white p-4 rounded-md shadow mt-2"
-                >
-                  <p className="text-gray-700">{comment}</p>
-                </div>
-              ))}
+        <div className="mt-6">
+          {commenti.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium text-gray-900">Comments</h3>
+              <div className="max-h-64 overflow-y-auto">
+                {commenti.map((comment, index) => (
+                  <div
+                    key={index}
+                    className="bg-white p-4 rounded-md shadow-md mt-2"
+                  >
+                    <p className="text-gray-700">{comment}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
