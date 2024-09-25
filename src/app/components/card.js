@@ -3,6 +3,7 @@ import Commenti from "./commenti";
 import { Button } from "@nextui-org/button";
 import { FiThumbsUp, FiThumbsDown } from "react-icons/fi";
 import { MdOutlineInsertComment, MdOutlineCommentsDisabled } from "react-icons/md";
+import ReactMarkdown from 'react-markdown';
 
 export default function Card({ cardId }) {
   const [like, setLike] = useState(0);
@@ -169,7 +170,7 @@ export default function Card({ cardId }) {
               }`}
             >
               <div className="w-60 break-words">
-                <h2>{showDescription ? posts.descrizione : posts.title}</h2>
+                <h2>{showDescription ? <ReactMarkdown>{posts.descrizione}</ReactMarkdown> : posts.title}</h2>
               </div>
             </button>
           ) : (

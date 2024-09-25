@@ -38,11 +38,11 @@ export default function SingIn() {
 
   return (
     <>
-      <div className="flex items-center h-screen text-black rounded-lg shadow-md p-6">
+      <div className="flex items-center h-screen text-black rounded-lg">
         <div className="flex justify-center rounded-[4em] md:rounded-[9em]">
           <div className="max-w-[24em] text-center">
             <p className="text-2xl font-bold">Welcome Back</p>
-            <p>Enter your email and password below to SignIn</p>
+            <p>Enter your username and password below to SignIn</p>
             <form>
               <div className="text-black">
                 <div className="space-y-6">
@@ -74,20 +74,6 @@ export default function SingIn() {
             {error && <p className="text-red-500">{error}</p>}
             <Button className="mt-5 w-full p-2 rounded-lg bg-gradient-to-r from-green-200 to-purple-400 text-white border border-white hover:bg-[#EA4335] hover:text-white duration-500" onClick={handleLoginClick}>
               Sign In
-            </Button>
-            <div className="flex items-center justify-center mt-10 mb-10">
-              <div className="border-t border-black w-full" />
-              <div className="px-4 font-medium">OR CONTINUE WITH</div>
-              <div className="border-t border-black w-full" />
-            </div>
-            <Button className="w-full p-2 rounded-lg border border-gray-300 hover:bg-black hover:text-white duration-500">
-              GitHub
-            </Button>
-            <Button className="mt-5 w-full p-2 rounded-lg border border-gray-300 hover:bg-red-600 hover:text-white duration-500">
-              Google
-            </Button>
-            <Button className="mt-5 w-full p-2 rounded-lg border border-gray-300 hover:bg-blue-500 hover:text-white duration-500">
-              Facebook
             </Button>
             <p className="mt-5">
               If you don't have an account yet, create a new one

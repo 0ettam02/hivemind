@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import ReactMarkdown from 'react-markdown';
 
 export default function InsertPost() {
   const [title, setTitle] = useState("");
@@ -65,10 +66,16 @@ export default function InsertPost() {
             cols={40}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            placeholder="Scrivi qui la tua descrizione in Markdown..."
           ></textarea>
         </div>
 
-        <h1 className="font-bold text-4xl mt-10">
+        <h2 className="font-bold text-2xl mt-5">Anteprima</h2>
+        <div className="mt-2 p-4 border border-black rounded bg-white text-black">
+          <ReactMarkdown>{description}</ReactMarkdown>
+        </div>
+
+        {/*<h1 className="font-bold text-4xl mt-10">
           Tag<a className="text-red-700">*</a>
         </h1>
 
@@ -78,7 +85,7 @@ export default function InsertPost() {
           <p>BIOLOGIA<input type="checkbox" onChange={() => handleCheckboxChange("BIOLOGIA")}></input></p>
           <p>VIDEOGAME<input type="checkbox" onChange={() => handleCheckboxChange("VIDEOGAME")}></input></p>
           <p>INFORMATICA<input type="checkbox" onChange={() => handleCheckboxChange("INFORMATICA")}></input></p>
-        </div>
+        </div>*/}
       </div>
 
       <div className="flex justify-center bg-gradient-to-r from-purple-400 to-green-200">
