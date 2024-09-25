@@ -20,12 +20,12 @@ export default function Container() {
       let url;
       if (!dec || !asc) {
         url = "http://localhost:8080/posts/card";
-      }if (asc) {
+      } if (asc) {
         url = "http://localhost:8080/posts/likeCrescenti";
-      }if (dec) {
+      } if (dec) {
         url = "http://localhost:8080/posts/likeDecrescenti";
       }
-
+  
       console.log(url);
       const response = await fetch(url);
       const data = await response.json();
@@ -33,7 +33,6 @@ export default function Container() {
     };
     fetchPosts();
   }, [dec, asc]);
-
   useEffect(() => {
     if (visible) {
       setTags("HOME");

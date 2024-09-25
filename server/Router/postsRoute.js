@@ -151,11 +151,15 @@ router.put("/dislike", authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/likeDecrescenti", async (req, res) => {
+router.get("/likeCrescenti", async (req, res) => {
   try {
-    const result = await pool.query(
-      "SELECT * FROM posts ORDER BY miPiace DESC"
-    );
+    const result = await pool.query(`
+      SELECT posts.*, COUNT(likes.id) AS like_count
+      FROM posts
+      LEFT JOIN likes ON posts.id = likes.idpost
+      GROUP BY posts.id
+      ORDER BY like_count ASC
+    `);
     res.json(result.rows);
   } catch (err) {
     console.error(err);
@@ -163,15 +167,22 @@ router.get("/likeDecrescenti", async (req, res) => {
   }
 });
 
-router.get("/likeCrescenti", async (req, res) => {
+router.get("/likeDecrescenti", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM posts ORDER BY miPiace ASC");
+    const result = await pool.query(`
+      SELECT posts.*, COUNT(likes.id) AS like_count
+      FROM posts
+      LEFT JOIN likes ON posts.id = likes.idpost
+      GROUP BY posts.id
+      ORDER BY like_count DESC
+    `);
     res.json(result.rows);
   } catch (err) {
     console.error(err);
     res.sendStatus(500);
   }
 });
+
 
 router.get("/showLike/:id", async (req, res) => {
   try {
