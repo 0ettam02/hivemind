@@ -55,11 +55,19 @@ export default function Card({ cardId }) {
       const data = await response.json();
       if (Array.isArray(data)) {
         setCommenti(data.map((commento) => commento.testo));
+        localStorage.setItem(`commenti_${cardId}`, JSON.stringify(data.map((commento) => commento.testo)));
       } else {
         setCommenti([data.commento]);
+        localStorage.setItem(`commenti_${cardId}`, JSON.stringify([data.commento]));
       }
     };
-    fetchComments();
+
+    const savedComments = localStorage.getItem(`commenti_${cardId}`);
+    if (savedComments) {
+      setCommenti(JSON.parse(savedComments));
+    } else {
+      fetchComments();
+    }
   }, [cardId]);
 
   useEffect(() => {
@@ -154,7 +162,9 @@ export default function Card({ cardId }) {
   };
 
   const handleCommentAdded = (newComment) => {
-    setCommenti([...commenti, newComment]);
+    const updatedComments = [...commenti, newComment];
+    setCommenti(updatedComments);
+    localStorage.setItem(`commenti_${cardId}`, JSON.stringify(updatedComments));
   };
 
   return (
