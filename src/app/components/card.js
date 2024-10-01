@@ -95,6 +95,24 @@ export default function Card({ cardId }) {
     };
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetch(`http://localhost:8080/posts/showLike/${cardId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setShowLike(data.mipiace);
+        });
+
+      fetch(`http://localhost:8080/posts/showDislike/${cardId}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setShowDislike(data.nonmipiace);
+        });
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [cardId]);
+
   const handleButtonLike = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -187,7 +205,6 @@ export default function Card({ cardId }) {
             <Commenti cardId={cardId} commenti={commenti} CommentAdded={handleCommentAdded} />
           )}
         </div>
-
         <div className="mt-2">
           <Button
             isIconOnly
