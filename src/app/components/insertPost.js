@@ -8,14 +8,11 @@ export default function InsertPost() {
   const [description, setDescription] = useState("");
   const [selectedTags, setSelectedTags] = useState([]);
 
-  const handleCheckboxChange = (tag) => {
-    setSelectedTags((prevSelectedTags) => {
-      if (prevSelectedTags.includes(tag)) {
-        return prevSelectedTags.filter((t) => t !== tag);
-      } else {
-        return [...prevSelectedTags, tag];
-      }
-    });
+  const handleDescriptionChange = (e) => {
+    const value = e.target.value;
+    if (value.length <= 400) {
+      setDescription(value);
+    }
   };
 
   const handleButtonClick = async () => {
@@ -65,27 +62,18 @@ export default function InsertPost() {
             rows={10}
             cols={40}
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={handleDescriptionChange}
             placeholder="Scrivi qui la tua descrizione in Markdown..."
           ></textarea>
+          <p className="mt-2 text-gray-600">
+            Caratteri inseriti: {description.length} / 400
+          </p>
         </div>
 
         <h2 className="font-bold text-2xl mt-5">Anteprima</h2>
-        <div className="mt-2 p-4 border border-black rounded bg-white text-black">
+        <div className="mt-2 p-4 border border-black rounded bg-white text-black max-w-full overflow-wrap break-words">
           <ReactMarkdown>{description}</ReactMarkdown>
         </div>
-
-        {/*<h1 className="font-bold text-4xl mt-10">
-          Tag<a className="text-red-700">*</a>
-        </h1>
-
-        <div className="flex flex-col bg-white mt-5 mb-10 text-black rounded-xl pr-6 border-2 border-black max-h-20 overflow-y-auto">
-          <p>TECH<input type="checkbox" onChange={() => handleCheckboxChange("TECH")}></input></p>
-          <p>ECONOMIA<input type="checkbox" onChange={() => handleCheckboxChange("ECONOMIA")}></input></p>
-          <p>BIOLOGIA<input type="checkbox" onChange={() => handleCheckboxChange("BIOLOGIA")}></input></p>
-          <p>VIDEOGAME<input type="checkbox" onChange={() => handleCheckboxChange("VIDEOGAME")}></input></p>
-          <p>INFORMATICA<input type="checkbox" onChange={() => handleCheckboxChange("INFORMATICA")}></input></p>
-        </div>*/}
       </div>
 
       <div className="flex justify-center bg-gradient-to-r from-purple-400 to-green-200">
