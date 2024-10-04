@@ -10,7 +10,16 @@ const JWT_SECRET = 'N86004402';
 
 router.get("/card", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM posts");
+    const result = await pool.query(`
+      SELECT posts.*, 
+             COUNT(likes.id) AS like_count, 
+             COUNT(dislike.id) AS dislike_count
+      FROM posts
+      LEFT JOIN likes ON posts.id = likes.idpost
+      LEFT JOIN dislike ON posts.id = dislike.idPost
+      GROUP BY posts.id
+      ORDER BY like_count DESC, dislike_count DESC
+    `);
     res.json(result.rows);
   } catch (err) {
     console.error(err);
