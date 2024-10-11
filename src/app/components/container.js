@@ -1,4 +1,3 @@
-"use client";
 import Card from "./card";
 import Footer from "./footer";
 import Tendina from "./tendinaHome";
@@ -25,7 +24,7 @@ export default function Container() {
       } if (dec) {
         url = "http://localhost:8080/posts/likeDecrescenti";
       }
-  
+
       console.log(url);
       const response = await fetch(url);
       const data = await response.json();
@@ -33,6 +32,7 @@ export default function Container() {
     };
     fetchPosts();
   }, [dec, asc]);
+
   useEffect(() => {
     if (visible) {
       setTags("HOME");
@@ -68,7 +68,7 @@ export default function Container() {
         )}
       </div>
       <div className="text-wrap mx-auto rounded-xl md:rounded-[4em] md:mt-20">
-        <div className="grid grid-cols-1 justify-items-center justify-space-between mt-10 md:grid-cols-3">
+        <div className="grid grid-cols-1 justify-items-center md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
           <p className="text-purple-400 text-6xl font-bold mb-10 md:mb-0">
             #{tags}
           </p>

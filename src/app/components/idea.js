@@ -8,7 +8,6 @@ export default function Idea() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Verifica se l'utente è autenticato
     const token = localStorage.getItem("token");
     setIsAuthenticated(!!token);
   }, []);
@@ -34,11 +33,11 @@ export default function Idea() {
         >
           +
         </button>
-        <img
+        {/* <img
           className="w-[5em] h-[5em] opacity-0 image-width-normal image-height-normal md:absolute md:opacity-100 your-image-class-normalMonitor your-image-class-bigMonitor"
           src="/persone.png"
           alt="Person"
-        />
+        /> */}
       </div>
     </div>
   );
