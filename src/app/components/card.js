@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Commenti from "./commenti";
 import { Button } from "@nextui-org/button";
 import { FiThumbsUp, FiThumbsDown } from "react-icons/fi";
@@ -15,6 +16,8 @@ export default function Card({ cardId }) {
   const [showLike, setShowLike] = useState(0);
   const [showDislike, setShowDislike] = useState(0); 
   const cardRef = useRef(null);
+
+  const router = useRouter();
 
   useEffect(() => {
     fetch(`http://localhost:8080/posts/whitepage/${cardId}`)
@@ -114,62 +117,68 @@ export default function Card({ cardId }) {
   }, [cardId]);
 
   const handleButtonLike = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if(!token) return null;
-      const response = await fetch(
-        `http://localhost:8080/posts/like/`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            'Authorization': `${token}`
-          },
-          body: JSON.stringify({
-            postId : cardId
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      setLike(like + 1);
-      setActiveButton("like");
-    } catch (error) {
-      console.error("There was a problem with the fetch operation:", error);
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/login'); 
+      return;
     }
-  };
-
-  const handleButtonDislike = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if(!token) return null;
-      const response = await fetch(
-        `http://localhost:8080/posts/dislike/`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            'Authorization': `${token}`
-          },
-          body: JSON.stringify({
-            postId : cardId
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+    const response = await fetch(
+      `http://localhost:8080/posts/like/`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `${token}`
+        },
+        body: JSON.stringify({
+          postId: cardId
+        }),
       }
+    );
 
-      setDislike(dislike + 1);
-      setActiveButton("dislike");
-    } catch (error) {
-      console.error("There was a problem with the fetch operation:", error);
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
     }
-  };
+
+    setLike(like + 1);
+    setActiveButton("like");
+  } catch (error) {
+    console.error("There was a problem with the fetch operation:", error);
+  }
+};
+
+const handleButtonDislike = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+    const response = await fetch(
+      `http://localhost:8080/posts/dislike/`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `${token}`
+        },
+        body: JSON.stringify({
+          postId: cardId
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    setDislike(dislike + 1);
+    setActiveButton("dislike");
+  } catch (error) {
+    console.error("There was a problem with the fetch operation:", error);
+  }
+};
 
   const toggleDescription = () => {
     setShowDescription(!showDescription);

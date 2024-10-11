@@ -1,14 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Commenti({ cardId, commenti, CommentAdded }) {
   const [newComment, setNewComment] = useState("");
+  const router = useRouter();
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (newComment.trim()) {
       try {
         const token = localStorage.getItem('token');
-        if (!token) return null;
+        if (!token) {
+          router.push('/login'); 
+          return;
+        }
         const response = await fetch(
           `http://localhost:8080/posts/comment/${cardId}`,
           {

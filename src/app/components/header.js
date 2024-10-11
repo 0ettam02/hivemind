@@ -17,7 +17,7 @@ export default function Header() {
     if (isAuthenticated) {
       localStorage.removeItem("token");
       setIsAuthenticated(false);
-      router.push('/login'); 
+      router.push('/'); 
     } else {
       router.push('/login'); 
     }
