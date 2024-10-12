@@ -113,7 +113,7 @@ export default function Registrazione() {
             </div>
           </div>
           <Button className="w-full py-2 mt-5 text-white bg-gradient-to-r from-purple-400 to-green-200 rounded-lg hover:bg-red-500" onClick={handleButtonClick}>
-            SingUp
+            SignUp
           </Button>
         </form>
       </div>
