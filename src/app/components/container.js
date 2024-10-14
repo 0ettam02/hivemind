@@ -2,6 +2,7 @@ import Card from "./card";
 import Footer from "./footer";
 import Tendina from "./tendinaHome";
 import React, { useState, useEffect } from "react";
+import { FiArrowDown } from "react-icons/fi";
 
 export default function Container() {
   const [posts, setPosts] = useState([]);
@@ -9,9 +10,24 @@ export default function Container() {
   const [visible, setVisible] = useState(true);
   const [dec, setDec] = useState(false);
   const [asc, setAsc] = useState(false);
+  const [visiblePosts, setVisiblePosts] = useState(10);
 
   const taggleClick = () => {
     setVisible(!visible);
+  };
+
+  const handleTagChange = (newTag) => {
+    setTags(newTag);
+  };
+
+  const handleLikeDec = () => {
+    setDec(true);
+    setAsc(false);
+  };
+
+  const handleLikeAsc = () => {
+    setAsc(true);
+    setDec(false);
   };
 
   useEffect(() => {
@@ -19,13 +35,14 @@ export default function Container() {
       let url;
       if (!dec || !asc) {
         url = "http://localhost:8080/posts/card";
-      } if (asc) {
+      }
+      if (asc) {
         url = "http://localhost:8080/posts/likeCrescenti";
-      } if (dec) {
+      }
+      if (dec) {
         url = "http://localhost:8080/posts/likeDecrescenti";
       }
 
-      console.log(url);
       const response = await fetch(url);
       const data = await response.json();
       setPosts(data);
@@ -33,24 +50,8 @@ export default function Container() {
     fetchPosts();
   }, [dec, asc]);
 
-  useEffect(() => {
-    if (visible) {
-      setTags("HOME");
-    }
-  });
-
-  const handleTagChange = (tag) => {
-    setTags(tag);
-  };
-
-  const handleLikeDec = () => {
-    setDec(!dec);
-    setAsc(false);
-  };
-
-  const handleLikeAsc = () => {
-    setAsc(!asc);
-    setDec(false);
+  const handleLoadMore = () => {
+    setVisiblePosts(visiblePosts + 10);
   };
 
   return (
@@ -72,10 +73,20 @@ export default function Container() {
           <p className="text-purple-400 text-6xl font-bold mb-10 md:mb-0">
             #{tags}
           </p>
-          {posts.map((post) => (
+          {posts.slice(0, visiblePosts).map((post) => (
             <Card key={post.id} cardId={post.id} />
           ))}
         </div>
+        {visiblePosts < posts.length && (
+          <div className="flex justify-center">
+            <button
+              onClick={handleLoadMore}
+              className="mt-4 bg-purple-400 text-white p-6 rounded-lg"
+            >
+              <FiArrowDown />
+            </button>
+          </div>
+        )}
       </div>
       <Footer />
     </>
